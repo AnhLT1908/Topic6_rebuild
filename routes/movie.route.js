@@ -166,4 +166,37 @@ movieRouter.get("/released-in/:year", async (req, res, next) => {
   }
 });
 
+movieRouter.get(
+  "/released-between/:startDate/:endDate",
+  async (req, res, next) => {
+    try {
+      const { startDate, endDate } = req.params;
+      const movieData = await db.Movie.find({
+        release: { $gte: startDate, $lte: endDate },
+      });
+      res.status(200).json(movieData);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+movieRouter.get("/count-released-after/:date", async (req, res, next) => {
+  try {
+    const date = req.params.date;
+    const movieData = await db.Movie.find({ release: { $gt: date } });
+    const movieCount  = movieData?.reduce((sum, movie) => {
+      return sum + 1
+    }, 0)
+    res.status(200).json({
+      date: date,
+      numberOfMovies: movieCount
+    })
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+
 module.exports = movieRouter;

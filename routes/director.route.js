@@ -35,4 +35,15 @@ directorRouter.get("/:directorId", async (req, res, next) => {
   }
 });
 
+directorRouter.get("/born-before/:date", async (req, res, next) => {
+  try {
+    const  date  = req.params.date;
+    const findDate = new Date(date);
+    const directorData = await db.Director.find({dob: {$lte: findDate}})
+    res.status(200).json(directorData);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = directorRouter;
